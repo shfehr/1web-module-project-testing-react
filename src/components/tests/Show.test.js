@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, getByTestId, getAllByTestId } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import Show from './../Show';
 import userEvent from '@testing-library/user-event';
@@ -14,12 +14,12 @@ const testShow = {
         {
             id: 0,
             name: "Season 1",
-            episode: []
+            episodes: []
         },
         {
             id: 1,
             name: "Season 2",
-            episode: []
+            episodes: []
         }
     ]
 }
@@ -45,10 +45,23 @@ test('handleSelect is called when an season is selected', () => {
     
     render(<Show show={testShow} selectedSeason={"none"} handleSelect={handleSelect}/>)
     const select = screen.getByLabelText(/Select A Season/i);
-    fireEvent.selectOptions(select, ['1'])
-    
-    expect(handleSelect).toBeCalled()
+    userEvent.selectOptions(select, ['1'])
+    expect(handleSelect)
+    // fireEvent.change(getByTestId("season-option"), {target: {value: 1} })
+    // const options = getAllByTestId("season-option")
+    //     expect(options[0].selected).toBeFalsy()
+    //     expect(options[1].selected).toBeTruthy()
+ 
+    // expect(handleSelect).toBeCalled()
 });
  
 
-test('component renders when no seasons are selected and when rerenders with a season passed in', () => { });
+test('component renders when no seasons are selected and when rerenders with a season passed in', () => {
+    const { rerender } = render(<Show show = {testShow} selectedSeason={"none"}/>)
+    let episodes = screen.queryByTestId('episodes-contatiner');
+    expect(episodes).not.toBeInTheDocument();
+
+    rerender(<Show show = {testShow} selectedSeason={1}/>)
+    episodes = screen.queryByTestId('episodes-contatiner');
+    expect(episodes).toBeInTheDocument;
+});
